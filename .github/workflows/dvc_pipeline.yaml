@@ -1,0 +1,47 @@
+name: DVC pipeline
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: Name of the experiment
+        required: true
+      params:
+        description: -S train.num_epochs=5
+        required: false
+jobs:
+  dvc_pipeline:
+    name: Run code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+#      - name: Setup SSH agent
+#        run: |
+#          id
+#          eval `ssh-agent -s`
+#          ssh-add - <<< "${{ secrets.GITHUB_TOKEN }}"
+#    #        echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> $GITHUB_ENV
+#  #         mkdir -p -m 0700 /root/.ssh && ssh-keyscan github.com > /root/.ssh/known_hosts
+#  #         ssh-keyscan github.com >> /root/.ssh/known_hosts
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install -r requirements.txt
+      - name: Pull DVC data from remote
+        run: |
+          dvc remote modify --local training_data access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          dvc remote modify --local training_data secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          dvc remote modify --local default access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          dvc remote modify --local default secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          dvc pull
+      
+      - name: Run the experiment
+        run: |
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/kyrylogy/dvc-test.git                 
+          dvc exp run ${{ github.event.inputs.params }} --name ${{ github.event.inputs.name }}
+          dvc exp push -v origin ${{ github.event.inputs.name }}
+      
+      - name: Push the results
+        run: |
+          echo "just waiting here for now"
+          

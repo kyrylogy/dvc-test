@@ -1,0 +1,14 @@
+data:
+  img_size:
+  - 32
+  - 32
+  train_path: ./data_in/train
+  batch_size: 128
+  validataion_split: 15
+  test_split: 10
+  classes:
+  - cat
+  - dog
+train:
+  num_epochs: 4
+test:

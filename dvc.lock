@@ -1,0 +1,66 @@
+schema: '2.0'
+stages:
+  dataset:
+    cmd: python dataset.py
+    deps:
+    - path: ./data_in/train
+      md5: b327c642538be3874f0856f44292f621.dir
+      size: 571915376
+      nfiles: 25000
+    - path: dataset.py
+      md5: 3c9ab61f4f98345985fc07f003ec462e
+      size: 2961
+    params:
+      params.yaml:
+        data:
+          img_size:
+          - 32
+          - 32
+          train_path: ./data_in/train
+          batch_size: 128
+          validataion_split: 20
+          test_split: 10
+          classes:
+          - cat
+          - dog
+    outs:
+    - path: ./data/samples
+      md5: f4234be6e0975e957bfe79fe38f988e6.dir
+      size: 473386
+      nfiles: 3
+  train:
+    cmd: python train.py
+    deps:
+    - path: ./data/samples
+      md5: f4234be6e0975e957bfe79fe38f988e6.dir
+      size: 473386
+      nfiles: 3
+    - path: train.py
+      md5: 7f7545e041a36860df93e28d8a9d8df1
+      size: 2202
+    params:
+      params.yaml:
+        train:
+          num_epochs: 5
+    outs:
+    - path: ./data/model
+      md5: f6c1cead469a19a58a0913896a524573.dir
+      size: 4172795
+      nfiles: 10
+  test:
+    cmd: python test.py
+    deps:
+    - path: ./data/model
+      md5: f6c1cead469a19a58a0913896a524573.dir
+      size: 4172795
+      nfiles: 10
+    - path: test.py
+      md5: fabb6a0de8d167569fdfee71d866587b
+      size: 435
+    params:
+      params.yaml:
+        test:
+    outs:
+    - path: ./data/test/metrics.json
+      md5: 49e66373f53dd275eec5c9bdbf474721
+      size: 265

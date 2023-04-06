@@ -1,0 +1,29 @@
+stages:
+  dataset:
+    cmd: python dataset.py
+    deps:
+      - dataset.py
+      - ./data_in/train
+    outs:
+      - ./data/samples
+    params:
+      - data
+  train:
+    cmd: python train.py
+    deps:
+      - train.py
+      - ./data/samples
+    outs:
+      - ./data/model
+    params:
+      - train
+  test:
+    cmd: python test.py
+    deps:
+      - test.py
+      - ./data/model
+    params:
+      - test
+    metrics:
+      - ./data/test/metrics.json:
+          cache: false

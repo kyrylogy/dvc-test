@@ -1,0 +1,1 @@
+{"loss": 0.6064743399620056, "auc": 0.7331596612930298, "binary_accuracy": 0.6687557101249695, "false_negatives": 5814.0, "false_positives": 5814.0, "true_negatives": 11738.0, "true_positives": 11738.0, "precision": 0.6687557101249695, "recall": 0.6687557101249695}
